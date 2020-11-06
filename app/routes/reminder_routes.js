@@ -37,7 +37,7 @@ router.get('/reminders', requireToken, (req, res, next) => {
       return reminders.map(reminder => reminder.toObject())
     })
     // responds with a status of 200 and a JSON of the reminders
-    .then(reminders => res.status(200).json({ reminders }))
+    .then(reminders => res.status(200).json({ reminders: reminders }))
     // if an error occurs, it'll be passed to an error handler
     .catch(next)
 })
@@ -51,6 +51,58 @@ router.get('reminders/:id', requireToken, (req, res, next) => {
     // if 'findById' is succesfull, a response with a status of 200 and a JSON of the 'reminder'
     .then(reminder => res.status(200).json({ reminder: reminder.toObject() }))
     // if an error occurs, it'll be passed to an error handler
+    .catch(next)
+})
+
+// CREATE
+// POST request
+router.post('/reminders', requireToken, (req, res, next) => {
+  // sets the owner of the new reminder to be the current user
+  req.body.reminder.owner = req.user.id
+
+  Reminder.create(req.body.reminder)
+    // responds with a status of 201 created and a JSON of new "reminder" on a successfull 'create'
+    .then(reminder => {
+      res.status(201).json({ reminder: reminder.toObject() })
+    })
+    // if an error occurs, pass it to our error handler
+    .catch(next)
+})
+
+// UPDATE
+// PATCH request
+router.patch('/reminders/:id', requireToken, removeBlanks, (req, res, next) => {
+  // deletes 'owner' key off of the incoming data, we never want to allow clients to update the 'owner' property by including a new 'owner'
+  delete req.body.reminder.owner
+
+  Reminder.findById(req.params.id)
+    .then(handle404)
+    .then(reminder => {
+      // passes the 'req' object and the Mongoose record to 'requireOwnership' and throws an error if the current user doesn't own the 'reminder'
+      requireOwnership(req, reminder)
+      // passes the result of the Mongoose's '.update' to the next '.then'
+      return reminder.updateOne(req.body.reminder)
+    })
+    // if updated successfully, returns a status of 204 and no JSON content
+    .then(() => res.sendStatus(204))
+    // if error occurs, this passes it to an error handler
+    .catch(next)
+})
+
+// DESTORY
+// DELETE request
+router.delete('/reminders/:id', requireToken, (req, res, next) => {
+  Reminder.findById(req.params.id)
+    .then(handle404)
+    .then(reminder => {
+      // throws an error if the current user doesn't own the 'reminder'
+      requireOwnership(req, reminder)
+      // deletes the reminder only if the above didn't throw an error
+      reminder.deleteOne()
+    })
+    // if deleted successfully, this sends back a status of 204 and no content
+    .then(() => res.sendStatus(204))
+    // if error occurs, this passes it to an error handler
     .catch(next)
 })
 
