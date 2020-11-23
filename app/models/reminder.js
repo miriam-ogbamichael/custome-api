@@ -3,8 +3,7 @@ const mongoose = require('mongoose')
 const reminderSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
-    enum: ['cultivate', 'magnify', 'energize']
+    required: true
   },
   reminder: {
     type: String,
