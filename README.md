@@ -33,3 +33,7 @@ https://miriam-ogbamichael.github.io/custome-client/
 8. ## Deployed CustoME App Api
 
 https://git.heroku.com/custome-api.git
+
+9. ## Unsolved Problems
+
+I could't figure out how to use enum's as a part of this resource. I wil need to add enum's to my V2 of this project to add my various resource categories (cultivate, magnify and energize).
