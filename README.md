@@ -28,4 +28,8 @@ https://drive.google.com/file/d/1DSmZBaj1XKsAUt8VTdhqc7gKIU2mf3iW/view?usp=shari
 
 7. ## Deployed CustoME App Client
 
+https://miriam-ogbamichael.github.io/custome-client/
+
 8. ## Deployed CustoME App Api
+
+https://git.heroku.com/custome-api.git
